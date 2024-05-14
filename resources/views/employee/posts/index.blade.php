@@ -1,4 +1,7 @@
 @extends('employee.layouts.main')
+<link rel="stylesheet" href="https://cdn.datatables.net/1.11.3/css/jquery.dataTables.min.css" />
+<script src="https://code.jquery.com/jquery-3.5.1.min.js"></script>
+<script src="https://cdn.datatables.net/1.11.3/js/jquery.dataTables.min.js"></script>
 
 @section('container')
     <div class="d-flex justify-content-between flex-wrap flex-md-nowrap align-items-center pt-3 pb-2 mb-3 border-bottom">
@@ -31,7 +34,7 @@
     <ul class="nav nav-tabs" id="attendanceTabs" role="tablist">
         <li class="nav-item" role="presentation">
             <button class="nav-link active" id="in-tab" data-bs-toggle="tab" data-bs-target="#in" type="button"
-                role="tab" aria-controls="in" aria-selected="true">Data</button>
+                role="tab" aria-controls="in" aria-selected="true">Data Absensi</button>
         </li>
     </ul>
 
@@ -39,10 +42,11 @@
         <div class="tab-pane fade show active" id="in" role="tabpanel" aria-labelledby="in-tab">
             <div class="row">
                 <div class="col-md-12">
-                    <h2>Data Absensi</h2>
-                    <table class="table">
+                    <br>
+                    <table id="myTable" class="table">
                         <thead>
                             <tr>
+                                <th>No</th>
                                 <th>Tanggal</th>
                                 <th>Waktu Masuk</th>
                                 <th>Status Masuk</th>
@@ -55,6 +59,7 @@
                         <tbody>
                             @foreach ($dailyRecords as $record)
                                 <tr>
+                                    <td></td>
                                     <td>{{ $record['date'] }}</td>
                                     <td>{{ $record['time_in'] }}</td>
                                     <td>{{ $record['status_in'] }}</td>
@@ -65,8 +70,46 @@
                                 </tr>
                             @endforeach
                         </tbody>
+                    </table>
                 </div>
             </div>
         </div>
     </div>
 @endsection
+
+<script>
+    $(document).ready(function() {
+        var t = $('#myTable').DataTable({
+            "paging": true,
+            "searching": true,
+            "columnDefs": [{
+                "searchable": false,
+                "orderable": false,
+                "targets": 0
+            }],
+            "order": [
+                [1, 'asc']
+            ],
+            "drawCallback": function(settings) {
+                var api = this.api();
+                var start = api.page.info().start;
+                api.column(0, {
+                    search: 'applied',
+                    order: 'applied'
+                }).nodes().each(function(cell, i) {
+                    cell.innerHTML = start + i + 1;
+                });
+            }
+        });
+
+        // To apply ordering to the first column (numbering)
+        t.on('order.dt search.dt', function() {
+            t.column(0, {
+                order: 'applied',
+                search: 'applied'
+            }).nodes().each(function(cell, i) {
+                cell.innerHTML = i + 1;
+            });
+        }).draw();
+    });
+</script>

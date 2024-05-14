@@ -3,7 +3,7 @@
     <tr>
         <td colspan="2" class="p-2 border border-black"
             style="padding-right: 50px; border: 1px solid black; vertical-align: top;">
-            <img src="{{ asset('img/logo.jpeg') }}" width="80px" style="vertical-align: top;">
+            <img src="{{ asset('../img/logo.jpeg') }}" alt="image" width="80px" style="vertical-align: top;">
         </td>
         <td colspan="6" class="border border-black" style="border: 1px solid black; vertical-align: top;">
             <p style="margin: 0; vertical-align: top;">
