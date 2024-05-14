@@ -20,22 +20,22 @@ class PayrollController extends Controller
     {
         $month = $request->input('month');
         $payrolls = Payroll::where('name', auth()->user()->name)
-                          ->where('month', $month)
-                          ->get();
+            ->where('month', $month)
+            ->get();
 
         return view('employee.payroll.form', compact('payrolls'));
     }
 
     public function generatePDF()
-{
-    $payrolls = Payroll::all();
-    $dompdf = new Dompdf();
-    $html = view('pdf.dashboard', compact('payrolls'))->render();
+    {
+        $payrolls = Payroll::all();
+        $dompdf = new Dompdf();
+        $html = view('pdf.dashboard', compact('payrolls'))->render();
 
-    $dompdf->loadHtml($html);
-    $dompdf->setPaper('A5', 'portrait');
-    $dompdf->render();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A5', 'portrait');
+        $dompdf->render();
 
-    return $dompdf->stream("payrolls.pdf");
-}
+        return $dompdf->stream("payrolls.pdf");
+    }
 }
