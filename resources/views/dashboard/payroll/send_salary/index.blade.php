@@ -163,7 +163,7 @@
 
                 Swal.fire({
                     title: 'Kirim Gaji Karyawan',
-                    text: 'Apakah Anda yakin ingin mengirim gaji untuk seluruh karyawan pada bulan ini?',
+                    text: 'Apakah Anda yakin ingin mengirim gaji untuk seluruh karyawan?',
                     icon: 'warning',
                     showCancelButton: true,
                     confirmButtonColor: '#3085d6',
@@ -174,18 +174,25 @@
                     if (result.isConfirmed) {
                         Swal.fire({
                             title: 'Masukkan Bulan',
-                            input: 'text',
-                            inputPlaceholder: 'Masukkan bulan (format: YYYY-MM)',
+                            html: '<input type="month" id="month-input" class="swal2-input">',
                             showCancelButton: true,
                             confirmButtonText: 'Kirim',
                             cancelButtonText: 'Batal',
-                            inputValidator: (value) => {
-                                if (!value) {
-                                    return 'Anda harus memasukkan bulan!'
+                            preConfirm: () => {
+                                const month = document.getElementById('month-input')
+                                    .value;
+                                if (!month) {
+                                    Swal.showValidationMessage(
+                                        'Anda harus memilih bulan!');
                                 }
+                                return {
+                                    month: month
+                                };
                             }
                         }).then((result) => {
                             if (result.isConfirmed) {
+                                const selectedMonth = result.value.month;
+                                // Lakukan apa yang perlu dilakukan dengan bulan yang dipilih
                                 $.ajax({
                                     url: "{{ route('payroll.check_existing') }}",
                                     type: "POST",
