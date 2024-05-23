@@ -11,6 +11,7 @@ use App\Http\Controllers\EmployeeController;
 use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardPostController;
+use App\Http\Controllers\SalaryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -31,16 +32,16 @@ Route::get('/', function () {
 
 
 
-Route::get('/login',[LoginController::class, 'index'])->name('login')->middleware('guest');
-Route::post('/login',[LoginController::class, 'authenticate']);
-Route::post('/logout',[LoginController::class, 'logout']);
+Route::get('/login', [LoginController::class, 'index'])->name('login')->middleware('guest');
+Route::post('/login', [LoginController::class, 'authenticate']);
+Route::post('/logout', [LoginController::class, 'logout']);
 
-Route::get('/dashboard', function() {
-    return view('dashboard.index');   
+Route::get('/dashboard', function () {
+    return view('dashboard.index');
 })->middleware('auth');
 
-Route::get('/employee', function() {
-    return view('employee.index');   
+Route::get('/employee', function () {
+    return view('employee.index');
 })->middleware('auth');
 
 Route::get('/dashboard/payroll', [DashboardController::class, 'index'])->middleware('auth');
@@ -55,8 +56,9 @@ Route::get('/dashboard/payroll/show', [DashboardController::class, 'showPayroll'
 Route::post('/dashboard/payroll/show', [DashboardController::class, 'showPayrollForm'])->name('dashboard.payroll.showForm');
 Route::get('/payrolls/pdf', [DashboardController::class, 'generatePDF'])->name('payrolls.pdf');
 
-
-
+Route::middleware(['auth'])->group(function () {
+    Route::resource('dashboard/salaries', SalaryController::class);
+});
 
 
 
@@ -64,8 +66,8 @@ Route::get('/payrolls/pdf', [DashboardController::class, 'generatePDF'])->name('
 Route::post('/dashboard/payroll', [DashboardController::class, 'storePayroll'])->name('dashboard.payroll.store');
 
 
-Route::resource('/dashboard/posts',DashboardPostController::class)->middleware('auth');
-Route::resource('/dashboard/setting',SettingController::class)->middleware('auth');
+Route::resource('/dashboard/posts', DashboardPostController::class)->middleware('auth');
+Route::resource('/dashboard/setting', SettingController::class)->middleware('auth');
 
 Route::get('/employee/posts', [EmployeeController::class, 'index'])->name('employee.posts.index')->middleware('auth');
 Route::resource('/employee/profile', ProfileController::class)->middleware('auth');
