@@ -6,21 +6,23 @@ use App\Models\Post;
 use App\Models\User;
 use Illuminate\Http\Request;
 use App\Models\Add;
+use App\Models\Salary;
 
 class DashboardPostController extends Controller
 {
 
     public function index()
     {
-      return view('dashboard.posts.index',[
-        'posts' => Post::all()
-      ]);
+        return view('dashboard.posts.index', [
+            'posts' => Post::all()
+        ]);
     }
 
     public function create()
     {
         $tags = Add::all();
-        return view('dashboard.posts.create', compact('tags'));
+        $gaji = Salary::all();
+        return view('dashboard.posts.create', compact('tags', 'gaji'));
     }
 
     public function store(Request $request)
@@ -37,12 +39,12 @@ class DashboardPostController extends Controller
             'role' => 'required',
             'password' => 'required|string|min:8',
             'image' => 'image|file|max:1024'
-        
+
         ]);
 
-    if($request->file('image')){
-        $validatedData['image'] = $request->file('image')->store('post-images');
-    }
+        if ($request->file('image')) {
+            $validatedData['image'] = $request->file('image')->store('post-images');
+        }
 
         Post::create($validatedData);
         User::create([
@@ -61,7 +63,7 @@ class DashboardPostController extends Controller
 
     public function show(Post $post)
     {
-        return view('dashboard.posts.show',[
+        return view('dashboard.posts.show', [
             'post' => $post,
         ]);
     }
@@ -69,7 +71,7 @@ class DashboardPostController extends Controller
 
     public function edit(Post $post)
     {
-        return view('dashboard.posts.edit',[
+        return view('dashboard.posts.edit', [
             'post' => $post,
         ]);
     }
@@ -85,8 +87,8 @@ class DashboardPostController extends Controller
 
         $validatedData = $request->validate($rules);
 
-        Post::where('id',$post->id)
-        ->update($validatedData);
+        Post::where('id', $post->id)
+            ->update($validatedData);
 
         return redirect('/dashboard/posts')->with('success', 'Data has been updated!');
     }
