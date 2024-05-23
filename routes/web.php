@@ -12,6 +12,7 @@ use App\Http\Controllers\RegisterController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\DashboardPostController;
 use App\Http\Controllers\SalaryController;
+use App\Http\Controllers\SendSalaryController;
 
 /*
 |--------------------------------------------------------------------------
@@ -59,7 +60,11 @@ Route::get('/payrolls/pdf', [DashboardController::class, 'generatePDF'])->name('
 Route::middleware(['auth'])->group(function () {
     Route::resource('/dashboard/salaries', SalaryController::class);
 });
-
+Route::middleware(['auth'])->group(function () {
+    Route::resource('/dashboard/send-salary', SendSalaryController::class);
+    Route::post('/payroll/check-existing', [SendSalaryController::class, 'checkExisting'])->name('payroll.check_existing');
+    Route::post('/dashboard/payroll/store_all', [SendSalaryController::class, 'storeAllPayrolls'])->name('payroll.store_all');
+});
 
 
 
