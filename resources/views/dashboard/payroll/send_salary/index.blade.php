@@ -20,8 +20,8 @@
     <table class="table table-striped table-bordered yajra-datatable">
         <thead class="table-dark">
             <tr>
-                <th>Nama Karyawan</th>
                 <th>Bulan</th>
+                <th>Nama Karyawan</th>
                 <th>Total Gaji</th>
                 <th>Aksi</th>
             </tr>
@@ -29,8 +29,8 @@
         <tbody>
             @foreach ($payrolls as $payroll)
                 <tr>
-                    <td>{{ $payroll->name }}</td>
                     <td>{{ $payroll->month }}</td>
+                    <td>{{ $payroll->name }}</td>
                     <td>{{ $payroll->amount }}</td>
                     <td>
                         <button class="btn btn-primary btn-sm" data-toggle="modal"
@@ -185,14 +185,11 @@
                                     Swal.showValidationMessage(
                                         'Anda harus memilih bulan!');
                                 }
-                                return {
-                                    month: month
-                                };
+                                return month;
                             }
                         }).then((result) => {
                             if (result.isConfirmed) {
-                                const selectedMonth = result.value.month;
-                                // Lakukan apa yang perlu dilakukan dengan bulan yang dipilih
+                                const selectedMonth = result.value;
                                 $.ajax({
                                     url: "{{ route('payroll.check_existing') }}",
                                     type: "POST",

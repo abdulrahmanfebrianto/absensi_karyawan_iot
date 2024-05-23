@@ -26,6 +26,7 @@ class SendSalaryController extends Controller
     public function checkExisting(Request $request)
     {
         $month = $request->input('month');
+        dd($month);
         $exists = Payroll::where('month', $month)->exists();
         // dd($exists);
         return response()->json([
