@@ -28,14 +28,23 @@
 
     <form method="POST" action="{{ route('salaries.store') }}">
         @csrf
-        <div class="form-group">
-            <label for="name">Name</label>
-            <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}" required>
+        <div class="row">
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="name">Name</label>
+                    <input type="text" class="form-control" id="name" name="name" value="{{ old('name') }}"
+                        required>
+                </div>
+            </div>
+            <div class="col-md-6">
+                <div class="form-group">
+                    <label for="nominal">Nominal</label>
+                    <input type="number" class="form-control" id="nominal" name="nominal" value="{{ old('nominal') }}"
+                        required>
+                </div>
+            </div>
         </div>
-        <div class="form-group">
-            <label for="nominal">Nominal</label>
-            <input type="number" class="form-control" id="nominal" name="nominal" value="{{ old('nominal') }}" required>
-        </div>
+        <br>
         <button type="submit" class="btn btn-primary">Create</button>
     </form>
 @endsection

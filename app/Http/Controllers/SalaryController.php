@@ -15,16 +15,15 @@ class SalaryController extends Controller
             return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href="' . route('salaries.edit', $row->id) . '" class="edit btn btn-primary btn-sm">Edit</a>';
-                    $btn .= ' <form action="' . route('salaries.destroy', $row->id) . '" method="POST" style="display:inline;"> ' . csrf_field() . method_field("DELETE") . ' <button type="submit" class="btn btn-danger btn-sm">Delete</button> </form>';
+                    $btn = '<a href="' . route('salaries.edit', $row->id) . '" class="edit btn btn-primary btn-sm"><i class="fas fa-eye"></i></a>';
+                    $btn .= ' <button class="btn btn-danger btn-sm delete-button" data-id="' . $row->id . '"><i class="fas fa-trash"></i></button>';
                     return $btn;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
-        $salaries = Salary::latest();
-        return view('dashboard.salary.index', compact('salaries'));
+        return view('dashboard.salary.index');
     }
     public function create()
     {
