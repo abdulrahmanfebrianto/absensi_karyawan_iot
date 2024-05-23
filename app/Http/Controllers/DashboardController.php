@@ -18,91 +18,90 @@ class DashboardController extends Controller
         $posts = Post::all();
         return view('dashboard.payroll.index', [
             'posts' => $posts
-    ]);
+        ]);
     }
 
     public function getSalary($id)
-{
-    $post = Post::findOrFail($id);
-    return response()->json(['salary' => $post->salary]);
-}
+    {
+        $post = Post::findOrFail($id);
+        // dd($post);
+        return response()->json(['salary' => $post->salary]);
+    }
 
-public function getAttendanceCount($tag, $monthYear)
-{
+    public function getAttendanceCount($tag, $monthYear)
+    {
 
-    $monthYearObj = Carbon::createFromFormat('Y-m', $monthYear);
+        $monthYearObj = Carbon::createFromFormat('Y-m', $monthYear);
 
-    $month = $monthYearObj->month;
-    $year = $monthYearObj->year;
+        $month = $monthYearObj->month;
+        $year = $monthYearObj->year;
 
-    $attendanceCount = DB::table('attendances')
-                        ->where('tag', $tag)
-                        ->whereMonth('date', $month)
-                        ->whereYear('date', $year)
-                        ->where('status', 'Masuk')
-                        ->count();
+        $attendanceCount = DB::table('attendances')
+            ->where('tag', $tag)
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->where('status', 'Masuk')
+            ->count();
 
-    return response()->json(['attendanceCount' => $attendanceCount]);
-}
+        return response()->json(['attendanceCount' => $attendanceCount]);
+    }
 
 
-public function storePayroll(Request $request)
-{
-    
-    $validatedData = $request->validate([
-        'month' => 'required',
-        'name' => 'required',
-        'tag' => 'required',
-        'count' => 'required',
-        'holiday' => 'required',
-        'late' => 'required',
-        'salary' => 'required',
-        'holiday_salary' => 'required',
-        'bonus' => 'required',
-        'total_salary' => 'required',
-        'cut' => 'required',
-        'total_transport' => 'required',
-        'amount' => 'required',
-        'note' => 'required',
-    ]);
+    public function storePayroll(Request $request)
+    {
+        // dd($request->all());
+        $validatedData = $request->validate([
+            'month' => 'required',
+            'name' => 'required',
+            'tag' => 'required',
+            'count' => 'required',
+            'holiday' => 'required',
+            'late' => 'required',
+            'salary' => 'required',
+            'holiday_salary' => 'required',
+            'bonus' => 'required',
+            'total_salary' => 'required',
+            'cut' => 'required',
+            'total_transport' => 'required',
+            'amount' => 'required',
+            'note' => 'required',
+        ]);
 
-    Payroll::create($validatedData);
-    return redirect('/dashboard/payroll')->with('success', 'Data payroll has been added');
-}
-public function getHolidaySalary($postId)
-{
-    $post = Post::findOrFail($postId);
-    $holidaySalary = $post->holiday_salary;
+        Payroll::create($validatedData);
+        return redirect('/dashboard/payroll')->with('success', 'Data payroll has been added');
+    }
+    public function getHolidaySalary($postId)
+    {
+        $post = Post::findOrFail($postId);
+        $holidaySalary = $post->holiday_salary;
 
-    return response()->json(['holiday_salary' => $holidaySalary]);
-}
-public function getLateCount($tag, $monthYear)
+        return response()->json(['holiday_salary' => $holidaySalary]);
+    }
+    public function getLateCount($tag, $monthYear)
     {
         $monthYearObj = Carbon::createFromFormat('Y-m', $monthYear);
         $month = $monthYearObj->month;
         $year = $monthYearObj->year;
 
         $lateCount = DB::table('attendances')
-                        ->where('tag', $tag)
-                        ->whereMonth('date', $month)
-                        ->whereYear('date', $year)
-                        ->where('status', 'Telat')
-                        ->count();
+            ->where('tag', $tag)
+            ->whereMonth('date', $month)
+            ->whereYear('date', $year)
+            ->where('status', 'Telat')
+            ->count();
 
         return response()->json(['lateCount' => $lateCount]);
     }
 
     public function getFineValue()
     {
-        $fineValue = Setting::first()->fine; 
+        $fineValue = Setting::first()->fine;
         return response()->json(['fineValue' => $fineValue]);
     }
     public function getTransport()
     {
         $fuelValue = Setting::first()->fuel;
         return response()->json(['fuelValue' => $fuelValue]);
-       
-
     }
     public function showPayrollForm(Request $request)
     {
@@ -115,10 +114,10 @@ public function getLateCount($tag, $monthYear)
         $postId = $request->input('post');
 
         $payrolls = Payroll::where('month', $month)
-                           ->whereHas('post', function ($query) use ($postId) {
-                               $query->where('id', $postId);
-                           })
-                           ->get();
+            ->whereHas('post', function ($query) use ($postId) {
+                $query->where('id', $postId);
+            })
+            ->get();
 
         return view('dashboard.payroll.form', compact('payrolls'));
     }
@@ -128,17 +127,16 @@ public function getLateCount($tag, $monthYear)
         return view('dashboard.payroll.show', compact('posts'));
     }
 
-public function generatePDF()
-{
-    $payrolls = Payroll::all();
-    $dompdf = new Dompdf();
-    $html = view('pdf.dashboard', compact('payrolls'))->render();
+    public function generatePDF()
+    {
+        $payrolls = Payroll::all();
+        $dompdf = new Dompdf();
+        $html = view('pdf.dashboard', compact('payrolls'))->render();
 
-    $dompdf->loadHtml($html);
-    $dompdf->setPaper('A5', 'portrait');
-    $dompdf->render();
+        $dompdf->loadHtml($html);
+        $dompdf->setPaper('A5', 'portrait');
+        $dompdf->render();
 
-    return $dompdf->stream("payrolls.pdf");
-}
-
+        return $dompdf->stream("payrolls.pdf");
+    }
 }
