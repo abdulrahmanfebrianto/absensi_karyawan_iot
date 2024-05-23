@@ -57,7 +57,7 @@ Route::post('/dashboard/payroll/show', [DashboardController::class, 'showPayroll
 Route::get('/payrolls/pdf', [DashboardController::class, 'generatePDF'])->name('payrolls.pdf');
 
 Route::middleware(['auth'])->group(function () {
-    Route::resource('dashboard/salaries', SalaryController::class);
+    Route::resource('/dashboard/salaries', SalaryController::class);
 });
 
 

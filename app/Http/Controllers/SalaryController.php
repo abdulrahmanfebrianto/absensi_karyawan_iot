@@ -12,40 +12,67 @@ class SalaryController extends Controller
     {
         if ($request->ajax()) {
             $data = Salary::latest()->get();
-            return DataTables::of($data)
+            return Datatables::of($data)
                 ->addIndexColumn()
                 ->addColumn('action', function ($row) {
-                    $btn = '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->id . '" data-original-title="Show" class="edit btn btn-info btn-sm showSalary">Show</a>';
-                    $btn = $btn . '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->id . '" data-original-title="Edit" class="edit btn btn-primary btn-sm editSalary">Edit</a>';
-                    $btn = $btn . '<a href="javascript:void(0)" data-toggle="tooltip"  data-id="' . $row->id . '" data-original-title="Delete" class="btn btn-danger btn-sm deleteSalary">Delete</a>';
+                    $btn = '<a href="' . route('salaries.edit', $row->id) . '" class="edit btn btn-primary btn-sm">Edit</a>';
+                    $btn .= ' <form action="' . route('salaries.destroy', $row->id) . '" method="POST" style="display:inline;"> ' . csrf_field() . method_field("DELETE") . ' <button type="submit" class="btn btn-danger btn-sm">Delete</button> </form>';
                     return $btn;
                 })
                 ->rawColumns(['action'])
                 ->make(true);
         }
 
-        return view('dashboard.salary.index');
+        $salaries = Salary::latest();
+        return view('dashboard.salary.index', compact('salaries'));
+    }
+    public function create()
+    {
+        return view('dashboard.salary.create');
     }
 
     public function store(Request $request)
     {
-        Salary::updateOrCreate(
-            ['id' => $request->salary_id],
-            ['name' => $request->name, 'nominal' => $request->nominal]
-        );
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'nominal' => 'required|integer'
+        ]);
 
-        return response()->json(['success' => 'Salary saved successfully.']);
+        Salary::create($request->all());
+
+        return redirect()->route('salaries.index')->with('success', 'Salary created successfully.');
+    }
+
+    public function show($id)
+    {
+        $salary = Salary::findOrFail($id);
+        return view('dashboard.salary.show', compact('salary'));
     }
 
     public function edit($id)
     {
-        $salary = Salary::find($id);
-        return response()->json($salary);
+        $salary = Salary::findOrFail($id);
+        return view('dashboard.salary.edit', compact('salary'));
+    }
+
+    public function update(Request $request, $id)
+    {
+        $request->validate([
+            'name' => 'required|string|max:100',
+            'nominal' => 'required|integer'
+        ]);
+
+        $salary = Salary::findOrFail($id);
+        $salary->update($request->all());
+
+        return redirect()->route('salaries.index')->with('success', 'Salary updated successfully.');
     }
 
     public function destroy($id)
     {
-        Salary::find($id)->delete();
-        return response()->json(['success' => 'Salary deleted successfully.']);
+        $salary = Salary::findOrFail($id);
+        $salary->delete();
+
+        return redirect()->route('salaries.index')->with('success', 'Salary deleted successfully.');
     }
 }
